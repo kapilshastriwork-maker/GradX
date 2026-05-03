@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GradX — TenzorX Hackathon Submission</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0B0F1A;
+    --ink-mid: #1C2340;
+    --ink-soft: #2E3A5C;
+    --cream: #F7F3EC;
+    --cream-dark: #EDE7D9;
+    --gold: #C9992A;
+    --gold-light: #E8BA50;
+    --gold-pale: #FFF4D6;
+    --teal: #1A9E8A;
+    --teal-pale: #E0F5F1;
+    --coral: #D95C3A;
+    --coral-pale: #FDEEE9;
+    --white: #FFFFFF;
+    --text-muted: #6B7A99;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--ink);
+    color: var(--cream);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── HEADER BAND ── */
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 4rem;
+    border-bottom: 1px solid rgba(201,153,42,0.2);
+    position: relative;
+    z-index: 10;
+  }
+  .top-bar .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+    color: var(--gold-light);
+  }
+  .top-bar .badge {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 0.35rem 0.85rem;
+    border-radius: 100px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5rem 4rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero-orbit {
+    position: absolute;
+    right: -100px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 680px;
+    height: 680px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,153,42,0.08);
+    pointer-events: none;
+  }
+  .hero-orbit::before {
+    content: '';
+    position: absolute;
+    inset: 60px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,153,42,0.12);
+  }
+  .hero-orbit::after {
+    content: '';
+    position: absolute;
+    inset: 140px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,153,42,0.18);
+    background: radial-gradient(circle at 60% 40%, rgba(201,153,42,0.06), transparent 70%);
+  }
+
+  .hero-dot {
+    position: absolute;
+    right: 220px;
+    top: calc(50% - 320px);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 20px rgba(201,153,42,0.6);
+    animation: orbit 18s linear infinite;
+  }
+
+  @keyframes orbit {
+    from { transform: rotate(0deg) translateX(310px) rotate(0deg); }
+    to   { transform: rotate(360deg) translateX(310px) rotate(-360deg); }
+  }
+
+  .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+    animation: fadeUp 0.8s ease both;
+  }
+  .eyebrow-line { width: 32px; height: 1px; background: var(--gold); }
+  .eyebrow-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(3.2rem, 6vw, 5.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    max-width: 680px;
+    animation: fadeUp 0.8s 0.15s ease both;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .hero-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 300;
+    color: rgba(247,243,236,0.65);
+    max-width: 520px;
+    margin-top: 1.5rem;
+    line-height: 1.7;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .hero-cta {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-top: 2.5rem;
+    animation: fadeUp 0.8s 0.45s ease both;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--gold);
+    color: var(--ink);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.85rem 1.75rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(247,243,236,0.6);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(247,243,236,0.2);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .btn-ghost:hover { color: var(--cream); border-color: rgba(247,243,236,0.5); }
+
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid rgba(255,255,255,0.07);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    position: relative;
+    z-index: 2;
+  }
+  .stat-cell {
+    padding: 2rem 2.5rem;
+    border-right: 1px solid rgba(255,255,255,0.07);
+    transition: background 0.3s;
+  }
+  .stat-cell:last-child { border-right: none; }
+  .stat-cell:hover { background: rgba(201,153,42,0.04); }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.6rem;
+    color: var(--gold-light);
+    line-height: 1;
+    margin-bottom: 0.35rem;
+  }
+  .stat-label {
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: rgba(247,243,236,0.45);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ── SECTION WRAPPER ── */
+  section { padding: 6rem 4rem; position: relative; z-index: 2; }
+  .section-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.25rem;
+  }
+  .section-tag::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 1px;
+    background: var(--gold);
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    max-width: 560px;
+    margin-bottom: 1rem;
+  }
+  .section-body {
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: rgba(247,243,236,0.6);
+    max-width: 560px;
+    line-height: 1.8;
+  }
+
+  /* ── DEMO VIDEO ── */
+  .demo-section {
+    background: rgba(255,255,255,0.02);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 5rem 4rem;
+  }
+  .demo-inner {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 4rem;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .video-frame {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(201,153,42,0.25);
+    box-shadow: 0 0 80px rgba(201,153,42,0.08);
+    aspect-ratio: 16/9;
+    background: #0B0F1A;
+  }
+  .video-frame iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: none;
+  }
+  .video-gold-corner {
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 32px;
+    height: 32px;
+    border-top: 2px solid var(--gold);
+    border-left: 2px solid var(--gold);
+  }
+  .video-gold-corner.br {
+    top: auto; left: auto;
+    bottom: -1px; right: -1px;
+    border-top: none; border-left: none;
+    border-bottom: 2px solid var(--gold);
+    border-right: 2px solid var(--gold);
+  }
+
+  /* ── FEATURES GRID ── */
+  .features-section { padding: 6rem 4rem; }
+  .features-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3.5rem;
+    align-items: end;
+  }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .feature-card {
+    background: var(--ink);
+    padding: 1.75rem;
+    transition: background 0.25s;
+    position: relative;
+  }
+  .feature-card:hover { background: rgba(201,153,42,0.04); }
+  .feature-card:hover .feature-icon { transform: scale(1.08); }
+  .feature-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .icon-gold { background: rgba(201,153,42,0.15); color: var(--gold-light); }
+  .icon-teal { background: rgba(26,158,138,0.15); color: #4DD9C5; }
+  .icon-coral { background: rgba(217,92,58,0.15); color: #F0876A; }
+  .icon-blue { background: rgba(64,110,220,0.15); color: #7B9EF5; }
+  .feature-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+    color: var(--cream);
+  }
+  .feature-desc {
+    font-size: 0.82rem;
+    font-weight: 300;
+    color: rgba(247,243,236,0.45);
+    line-height: 1.6;
+  }
+  .feature-tag {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+  .tag-learn { background: rgba(201,153,42,0.12); color: var(--gold); }
+  .tag-explore { background: rgba(26,158,138,0.12); color: #4DD9C5; }
+  .tag-apply { background: rgba(64,110,220,0.12); color: #7B9EF5; }
+  .tag-prosper { background: rgba(217,92,58,0.12); color: #F0876A; }
+
+  /* ── TECH STACK ── */
+  .tech-section {
+    background: linear-gradient(135deg, rgba(201,153,42,0.06) 0%, transparent 60%);
+    border-top: 1px solid rgba(201,153,42,0.12);
+    border-bottom: 1px solid rgba(201,153,42,0.12);
+    padding: 5rem 4rem;
+  }
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+  .tech-pill {
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .tech-pill:hover {
+    border-color: rgba(201,153,42,0.35);
+    background: rgba(201,153,42,0.05);
+  }
+  .tech-pill .t-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .tech-pill .t-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--cream);
+    letter-spacing: 0.02em;
+  }
+  .tech-pill .t-role {
+    font-size: 0.68rem;
+    color: rgba(247,243,236,0.35);
+    margin-top: 0.2rem;
+  }
+
+  /* ── BUSINESS CASE ── */
+  .biz-section { padding: 6rem 4rem; }
+  .biz-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+    align-items: start;
+    margin-top: 3rem;
+  }
+  .projection-table {
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .proj-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    align-items: center;
+  }
+  .proj-row:last-child { border-bottom: none; }
+  .proj-row.header {
+    background: rgba(255,255,255,0.04);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(247,243,236,0.4);
+  }
+  .proj-row .penetration { font-weight: 500; color: var(--cream); }
+  .proj-row .users { color: rgba(247,243,236,0.55); font-size: 0.88rem; }
+  .proj-row .aum {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold-light);
+    text-align: right;
+  }
+
+  .highlight-box {
+    background: rgba(201,153,42,0.07);
+    border: 1px solid rgba(201,153,42,0.2);
+    border-radius: 12px;
+    padding: 2rem;
+  }
+  .highlight-box p {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    line-height: 1.5;
+    color: var(--cream);
+    margin-bottom: 1.25rem;
+  }
+  .highlight-box .credit {
+    font-size: 0.78rem;
+    color: rgba(247,243,236,0.4);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .digilocker-badge {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    background: rgba(26,158,138,0.08);
+    border: 1px solid rgba(26,158,138,0.2);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-top: 1.25rem;
+  }
+  .digilocker-badge .dl-icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(26,158,138,0.18);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .digilocker-badge .dl-text { flex: 1; }
+  .digilocker-badge .dl-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #4DD9C5;
+    margin-bottom: 0.25rem;
+  }
+  .digilocker-badge .dl-body { font-size: 0.78rem; color: rgba(247,243,236,0.45); line-height: 1.5; }
+
+  /* ── LEAP SECTION ── */
+  .leap-section { padding: 6rem 4rem; }
+  .leap-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+  .leap-card {
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s, border-color 0.25s;
+  }
+  .leap-card:hover { transform: translateY(-4px); }
+  .leap-letter {
+    font-family: 'DM Serif Display', serif;
+    font-size: 4.5rem;
+    line-height: 0.9;
+    opacity: 0.08;
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    pointer-events: none;
+  }
+  .leap-card.l { border-color: rgba(201,153,42,0.2); }
+  .leap-card.l:hover { border-color: rgba(201,153,42,0.45); }
+  .leap-card.l .leap-letter { color: var(--gold); opacity: 0.12; }
+  .leap-card.e { border-color: rgba(26,158,138,0.2); }
+  .leap-card.e:hover { border-color: rgba(26,158,138,0.45); }
+  .leap-card.e .leap-letter { color: #4DD9C5; opacity: 0.12; }
+  .leap-card.a { border-color: rgba(64,110,220,0.2); }
+  .leap-card.a:hover { border-color: rgba(64,110,220,0.45); }
+  .leap-card.a .leap-letter { color: #7B9EF5; opacity: 0.12; }
+  .leap-card.p { border-color: rgba(217,92,58,0.2); }
+  .leap-card.p:hover { border-color: rgba(217,92,58,0.45); }
+  .leap-card.p .leap-letter { color: #F0876A; opacity: 0.12; }
+
+  .leap-word {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .leap-card.l .leap-word { color: var(--gold); }
+  .leap-card.e .leap-word { color: #4DD9C5; }
+  .leap-card.a .leap-word { color: #7B9EF5; }
+  .leap-card.p .leap-word { color: #F0876A; }
+
+  .leap-desc {
+    font-size: 0.83rem;
+    font-weight: 300;
+    color: rgba(247,243,236,0.55);
+    line-height: 1.65;
+  }
+  .leap-features {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .leap-feat {
+    font-size: 0.75rem;
+    color: rgba(247,243,236,0.35);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .leap-feat::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
+  /* ── TAGLINE HERO ── */
+  .tagline-section {
+    text-align: center;
+    padding: 7rem 4rem;
+    background: linear-gradient(180deg, transparent, rgba(201,153,42,0.04), transparent);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .tagline {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+    line-height: 1.3;
+    max-width: 760px;
+    margin: 0 auto 1.5rem;
+    color: var(--cream);
+  }
+  .tagline em { color: var(--gold-light); font-style: italic; }
+  .tagline-note {
+    font-size: 0.88rem;
+    font-weight: 300;
+    color: rgba(247,243,236,0.35);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 2.5rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    position: relative;
+    z-index: 2;
+  }
+  footer .f-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--gold-light);
+  }
+  footer .f-note { font-size: 0.78rem; color: rgba(247,243,236,0.25); }
+  footer .f-pf {
+    font-size: 0.78rem;
+    color: rgba(247,243,236,0.3);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  footer .f-pf strong { color: rgba(247,243,236,0.55); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ── DIVIDER ── */
+  .gold-divider {
+    width: 40px;
+    height: 2px;
+    background: var(--gold);
+    margin: 1.25rem 0;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .top-bar, section, .demo-section, footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .hero { padding: 3rem 1.5rem; min-height: auto; }
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .demo-inner { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .features-header { grid-template-columns: 1fr; }
+    .tech-grid { grid-template-columns: repeat(3, 1fr); }
+    .leap-grid { grid-template-columns: 1fr 1fr; }
+    .biz-grid { grid-template-columns: 1fr; }
+    .hero-orbit, .hero-dot { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="top-bar">
+  <div class="logo">GradX</div>
+  <div class="badge">TenzorX Hackathon · 2026 Submission</div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orbit"></div>
+  <div class="hero-dot"></div>
+
+  <div class="hero-eyebrow">
+    <span class="eyebrow-line"></span>
+    <span class="eyebrow-text">India's First AI-Native Student Operating System</span>
+  </div>
+
+  <h1>Turn <em>anxiety</em><br>into ambition.</h1>
+
+  <p class="hero-sub">
+    GradX eliminates the fragmented study-abroad journey — guiding 500,000+ Indian students from their first question to a sanctioned Poonawalla Fincorp education loan, entirely through AI.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#demo" class="btn-primary">▶ &nbsp;Watch Demo</a>
+    <a href="#features" class="btn-ghost">Explore 26 Features →</a>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stat-cell">
+    <div class="stat-num" data-target="26">0</div>
+    <div class="stat-label">Working Features</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num" data-target="9">0</div>
+    <div class="stat-label">Groq API Routes</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num" data-suffix="L+">₹0</div>
+    <div class="stat-label">Avg. Loan Facilitated</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num" data-target="0" data-suffix="%" data-zero="Zero">0</div>
+    <div class="stat-label">Customer Acquisition Cost</div>
+  </div>
+</div>
+
+<!-- DEMO VIDEO -->
+<div class="demo-section" id="demo">
+  <div class="demo-inner">
+    <div class="reveal">
+      <div class="section-tag">Live Demo</div>
+      <div class="section-title">See GradX in action</div>
+      <div class="gold-divider"></div>
+      <p class="section-body">
+        Every feature is live, every API is functional, every page is deployed on Vercel — accessible to anyone, anywhere, right now.
+      </p>
+      <br>
+      <p style="font-size:0.82rem; color: rgba(247,243,236,0.35); margin-top:0.5rem; font-weight:300; letter-spacing:0.04em;">
+        Built in 15 sub-phases · Next.js 14 · Supabase · Groq Llama 3.3 70B
+      </p>
+    </div>
+    <div class="video-frame reveal">
+      <div class="video-gold-corner"></div>
+      <div class="video-gold-corner br"></div>
+      <iframe
+        src="https://www.youtube.com/embed/UomQNcftVbs?rel=0&modestbranding=1&color=white"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+</div>
+
+<!-- LEAP SECTION -->
+<section class="leap-section" id="leap">
+  <div class="section-tag">The Framework</div>
+  <div class="section-title">Built on LEAP —<br>every feature has a purpose</div>
+  <div class="leap-grid">
+    <div class="leap-card l reveal">
+      <div class="leap-letter">L</div>
+      <div class="leap-word">Learn</div>
+      <div class="leap-desc">Discovery tools that transform an uncertain student into an informed applicant.</div>
+      <div class="leap-features">
+        <span class="leap-feat">AI Career Navigator</span>
+        <span class="leap-feat">Admission Probability Predictor</span>
+        <span class="leap-feat">Profile Benchmarking</span>
+        <span class="leap-feat">Scholarship Finder</span>
+      </div>
+    </div>
+    <div class="leap-card e reveal" style="transition-delay:0.1s">
+      <div class="leap-letter">E</div>
+      <div class="leap-word">Explore</div>
+      <div class="leap-desc">Deep research tools to compare, plan, and build confidence in every decision.</div>
+      <div class="leap-features">
+        <span class="leap-feat">University Comparison Tool</span>
+        <span class="leap-feat">Cost of Living Explorer</span>
+        <span class="leap-feat">ROI Calculator</span>
+        <span class="leap-feat">Visa Guide & Tracker</span>
+      </div>
+    </div>
+    <div class="leap-card a reveal" style="transition-delay:0.2s">
+      <div class="leap-letter">A</div>
+      <div class="leap-word">Apply</div>
+      <div class="leap-desc">Execution tools that turn plans into polished applications, efficiently.</div>
+      <div class="leap-features">
+        <span class="leap-feat">SOP Co-Pilot</span>
+        <span class="leap-feat">Application Timeline Builder</span>
+        <span class="leap-feat">Application Tracker (Kanban)</span>
+        <span class="leap-feat">Document Vault + DigiLocker</span>
+      </div>
+    </div>
+    <div class="leap-card p reveal" style="transition-delay:0.3s">
+      <div class="leap-letter">P</div>
+      <div class="leap-word">Prosper</div>
+      <div class="leap-desc">Financing tools that convert confident students into Poonawalla's best borrowers.</div>
+      <div class="leap-features">
+        <span class="leap-feat">Dynamic Loan Offer Engine</span>
+        <span class="leap-feat">Loan Readiness Score</span>
+        <span class="leap-feat">Post-Admit Dashboard</span>
+        <span class="leap-feat">Autonomous Growth Loop</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES GRID -->
+<section class="features-section" id="features" style="background: rgba(255,255,255,0.01); border-top: 1px solid rgba(255,255,255,0.05);">
+  <div class="features-header">
+    <div>
+      <div class="section-tag">Feature Set</div>
+      <div class="section-title">26 features.<br>One seamless journey.</div>
+    </div>
+    <div class="section-body" style="font-size:0.92rem;">
+      Not a chatbot. Not a calculator. Not a loan form. All of them simultaneously — woven by AI into a single continuous experience.
+    </div>
+  </div>
+
+  <div class="features-grid reveal">
+    <div class="feature-card">
+      <div class="feature-icon icon-gold">🧭</div>
+      <div class="feature-name">AI Career Navigator</div>
+      <div class="feature-desc">Five-question wizard → six personalized university matches with match scores, cost breakdowns, and admission probability.</div>
+      <span class="feature-tag tag-learn">Learn</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-teal">📊</div>
+      <div class="feature-name">ROI Calculator</div>
+      <div class="feature-desc">10-year financial projection with break-even timeline, three salary scenarios, and live chart. The tool that replaces a sales conversation.</div>
+      <span class="feature-tag tag-explore">Explore</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-blue">✍️</div>
+      <div class="feature-name">SOP Co-Pilot</div>
+      <div class="feature-desc">Complete 1,000-word Statement of Purpose in under 30 seconds. Split-pane editor for iteration. Admission-officer feedback mode.</div>
+      <span class="feature-tag tag-apply">Apply</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-coral">🤖</div>
+      <div class="feature-name">Shikha — AI Mentor</div>
+      <div class="feature-desc">Named AI mentor powered by Groq Llama 3.3 70B. Profile-aware, Hindi-inflected, emotionally intelligent. Available 24/7 on every page.</div>
+      <span class="feature-tag tag-learn">Learn</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-gold">⚡</div>
+      <div class="feature-name">Dynamic Loan Engine</div>
+      <div class="feature-desc">Interest rate improves as profile completeness grows. Incentivizes data sharing. Delivers Poonawalla better credit underwriting with every lead.</div>
+      <span class="feature-tag tag-prosper">Prosper</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-teal">🔐</div>
+      <div class="feature-name">DigiLocker Integration</div>
+      <div class="feature-desc">One button fetches verified Aadhaar, PAN, and marksheets. Aligned with Poonawalla's March 2026 DigiLocker MoU.</div>
+      <span class="feature-tag tag-prosper">Prosper</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-blue">🏆</div>
+      <div class="feature-name">Readiness Score</div>
+      <div class="feature-desc">Auto-calculated from profile across 5 dimensions. Shareable on LinkedIn. Drives daily return visits and creates viral organic acquisition.</div>
+      <span class="feature-tag tag-learn">Learn</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-coral">📋</div>
+      <div class="feature-name">Application Tracker</div>
+      <div class="feature-desc">Kanban board through 7 stages. Offer Received triggers instant loan eligibility CTA — the highest-intent conversion moment, captured precisely.</div>
+      <span class="feature-tag tag-apply">Apply</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-gold">📈</div>
+      <div class="feature-name">Autonomous Growth Loop</div>
+      <div class="feature-desc">AI agent acquires from Reddit, profiles, engages, scores, and submits a complete loan application — zero human involvement, 18 days end-to-end.</div>
+      <span class="feature-tag tag-prosper">Prosper</span>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section class="tech-section">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="section-tag">Technology</div>
+    <div style="display:flex; justify-content:space-between; align-items:end; flex-wrap:wrap; gap:1rem;">
+      <div class="section-title" style="margin-bottom:0;">Production-grade.<br>Free-tier scalable.</div>
+      <p style="font-size:0.85rem; color:rgba(247,243,236,0.4); max-width:340px; font-weight:300; line-height:1.7;">
+        The only cost that grows with scale is Groq API inference — representing less than 0.01% of the interest revenue it generates.
+      </p>
+    </div>
+    <div class="tech-grid reveal">
+      <div class="tech-pill">
+        <div class="t-icon">⚡</div>
+        <div class="t-name">Next.js 14</div>
+        <div class="t-role">Framework + TypeScript</div>
+      </div>
+      <div class="tech-pill">
+        <div class="t-icon">🗄️</div>
+        <div class="t-name">Supabase</div>
+        <div class="t-role">Auth + Database + RLS</div>
+      </div>
+      <div class="tech-pill">
+        <div class="t-icon">🦙</div>
+        <div class="t-name">Groq + Llama 3.3</div>
+        <div class="t-role">9 AI API Routes · 70B</div>
+      </div>
+      <div class="tech-pill">
+        <div class="t-icon">▲</div>
+        <div class="t-name">Vercel</div>
+        <div class="t-role">Edge Deployment · Live Now</div>
+      </div>
+      <div class="tech-pill">
+        <div class="t-icon">🎨</div>
+        <div class="t-name">Tailwind CSS</div>
+        <div class="t-role">Design System</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BUSINESS CASE -->
+<section class="biz-section" id="business">
+  <div class="section-tag">Business Case</div>
+  <div class="section-title">The numbers for<br>Poonawalla Fincorp</div>
+  <div class="gold-divider"></div>
+
+  <div class="biz-grid">
+    <div class="reveal">
+      <p class="section-body" style="margin-bottom: 1.75rem;">
+        At 1% penetration of India's 500,000 annual study-abroad students and 20% loan conversion, GradX delivers ₹150 Cr in loan disbursals in Year 1 — at effectively zero customer acquisition cost.
+      </p>
+
+      <div class="projection-table">
+        <div class="proj-row header">
+          <span>Penetration</span>
+          <span>Engaged Users</span>
+          <span style="text-align:right">Annual AUM</span>
+        </div>
+        <div class="proj-row">
+          <span class="penetration">1%</span>
+          <span class="users">5,000</span>
+          <span class="aum">₹150 Cr</span>
+        </div>
+        <div class="proj-row">
+          <span class="penetration">5%</span>
+          <span class="users">25,000</span>
+          <span class="aum">₹750 Cr</span>
+        </div>
+        <div class="proj-row">
+          <span class="penetration">10%</span>
+          <span class="users">50,000</span>
+          <span class="aum">₹2,000+ Cr</span>
+        </div>
+      </div>
+
+      <div class="digilocker-badge" style="margin-top: 1.25rem;">
+        <div class="dl-icon">🔗</div>
+        <div class="dl-text">
+          <div class="dl-title">DigiLocker MoU — March 2026</div>
+          <div class="dl-body">GradX's DigiLocker integration directly references Poonawalla Fincorp's formal MoU signed one month before this hackathon — aligned with their actual strategic roadmap.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="transition-delay:0.15s">
+      <div class="highlight-box">
+        <p>"GradX is not a hackathon project. It is a deployable product that happens to have been built during a hackathon."</p>
+        <span class="credit">— GradX Product Philosophy</span>
+      </div>
+
+      <div style="margin-top: 1.5rem; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; overflow: hidden;">
+        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+          <div style="font-family: 'Syne', sans-serif; font-size:0.7rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:rgba(247,243,236,0.3); margin-bottom:0.75rem;">What makes every GradX lead different</div>
+          <div style="display:flex; flex-direction:column; gap:0.65rem;">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <div style="width:6px; height:6px; border-radius:50%; background:var(--gold); flex-shrink:0;"></div>
+              <span style="font-size:0.83rem; color:rgba(247,243,236,0.6);">Pre-qualified before touching the loan form</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <div style="width:6px; height:6px; border-radius:50%; background:var(--teal); flex-shrink:0;"></div>
+              <span style="font-size:0.83rem; color:rgba(247,243,236,0.6);">Financially literate from the ROI calculator</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <div style="width:6px; height:6px; border-radius:50%; background:#7B9EF5; flex-shrink:0;"></div>
+              <span style="font-size:0.83rem; color:rgba(247,243,236,0.6);">Documents verified via DigiLocker before application</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <div style="width:6px; height:6px; border-radius:50%; background:#F0876A; flex-shrink:0;"></div>
+              <span style="font-size:0.83rem; color:rgba(247,243,236,0.6);">Loan readiness ≥ 70/100 before CTA is shown</span>
+            </div>
+          </div>
+        </div>
+        <div style="padding: 1rem 1.5rem; background: rgba(201,153,42,0.04);">
+          <span style="font-size:0.78rem; color:rgba(247,243,236,0.35); font-weight:300;">Lead quality from GradX is <strong style="color:rgba(247,243,236,0.65);">fundamentally different</strong> from any other acquisition channel</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAGLINE -->
+<div class="tagline-section">
+  <div class="tagline">
+    GradX turns India's most <em>anxious students</em> into Poonawalla Fincorp's most <em>confident borrowers</em> — entirely through AI, at zero customer acquisition cost.
+  </div>
+  <div class="tagline-note">26 features · 9 AI routes · Deployed live · Built for TenzorX 2026</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">GradX</div>
+  <div class="f-note">India's First AI-Native Student Operating System · LEAP Framework</div>
+  <div class="f-pf">Built for <strong>Poonawalla Fincorp</strong> · TenzorX Hackathon</div>
+</footer>
+
+<script>
+  // Intersection observer for reveal animations
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Counter animation
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.target || '0');
+    const suffix = el.dataset.suffix || '';
+    const prefix = el.textContent.charAt(0) === '₹' ? '₹' : '';
+    const zero = el.dataset.zero;
+    if (zero) { el.textContent = zero; return; }
+    if (target === 15) { el.textContent = '₹15L+'; return; }
+    let start = 0;
+    const duration = 1400;
+    const step = timestamp => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = prefix + Math.floor(eased * target) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const statObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.stat-num').forEach(animateCounter);
+        statObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.stats-strip').forEach(el => statObserver.observe(el));
+
+  // Fix ₹15L counter
+  document.querySelectorAll('.stat-num').forEach(el => {
+    if (el.textContent === '₹0') {
+      el.dataset.target = '15';
+      el.dataset.suffix = 'L+';
+    }
+    if (el.dataset.zero === 'Zero') {
+      el.textContent = 'Zero';
+    }
+  });
+</script>
+</body>
+</html>
